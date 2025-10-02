@@ -1,20 +1,18 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Clock, TrendingUp, Star } from "lucide-react";
 import RecipeCard from "@/components/RecipeCard";
 import { getRecentRecipes, Recipe } from "@/data/mockRecipes";
 
 const Home = () => {
   const [recentRecipes, setRecentRecipes] = useState<Recipe[]>(getRecentRecipes());
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSwipeLeft = (recipe: Recipe) => {
     console.log("Added to menu:", recipe.name);
-    setCurrentCardIndex(prev => Math.min(prev + 1, recentRecipes.length - 1));
   };
 
   const handleSwipeRight = (recipe: Recipe) => {
     console.log("Marked as made:", recipe.name);
-    setCurrentCardIndex(prev => Math.min(prev + 1, recentRecipes.length - 1));
   };
 
   const handleLike = (recipe: Recipe) => {
@@ -22,8 +20,6 @@ const Home = () => {
       prev.map(r => r.id === recipe.id ? { ...r, isLiked: !r.isLiked } : r)
     );
   };
-
-  const currentRecipe = recentRecipes[currentCardIndex];
 
   return (
     <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
@@ -78,72 +74,42 @@ const Home = () => {
         </div>
 
         {/* Recent Recipes Section */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-foreground mb-2">Your Recent Recipes</h2>
-          <p className="text-muted-foreground">Continue cooking from where you left off</p>
+          <p className="text-muted-foreground">Drag to browse your recipe collection</p>
         </div>
 
-        {/* Recipe Card Stack */}
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            {currentRecipe && (
-              <div className="animate-scale-in">
+        {/* Horizontal Scrollable Recipe Cards */}
+        <div 
+          ref={scrollContainerRef}
+          className="overflow-x-auto overflow-y-visible scrollbar-hide pb-8 -mx-6 px-6 cursor-grab active:cursor-grabbing"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          <div className="flex gap-6 w-max">
+            {recentRecipes.map((recipe, index) => (
+              <div 
+                key={recipe.id} 
+                className="animate-scale-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <RecipeCard
-                  recipe={currentRecipe}
+                  recipe={recipe}
                   onSwipeLeft={handleSwipeLeft}
                   onSwipeRight={handleSwipeRight}
                   onLike={handleLike}
                 />
               </div>
-            )}
-            
-            {/* Progress indicator */}
-            <div className="flex justify-center mt-6 space-x-2">
-              {recentRecipes.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                    index === currentCardIndex
-                      ? 'bg-primary'
-                      : index < currentCardIndex
-                      ? 'bg-accent'
-                      : 'bg-border'
-                  }`}
-                />
-              ))}
-            </div>
+            ))}
           </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-          <button
-            onClick={() => setCurrentCardIndex(prev => Math.max(0, prev - 1))}
-            className="p-4 bg-card rounded-card shadow-card hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentCardIndex === 0}
-          >
-            <div className="text-center">
-              <div className="text-2xl mb-2">⬅️</div>
-              <p className="text-sm font-medium text-foreground">Previous</p>
-            </div>
-          </button>
-          
-          <button
-            onClick={() => setCurrentCardIndex(prev => Math.min(recentRecipes.length - 1, prev + 1))}
-            className="p-4 bg-card rounded-card shadow-card hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={currentCardIndex === recentRecipes.length - 1}
-          >
-            <div className="text-center">
-              <div className="text-2xl mb-2">➡️</div>
-              <p className="text-sm font-medium text-foreground">Next</p>
-            </div>
-          </button>
         </div>
 
         {/* Swipe Instructions */}
         <div className="text-center mt-8 p-4 bg-muted rounded-card">
           <p className="text-sm text-muted-foreground">
-            💡 <strong>Pro tip:</strong> Tap to flip cards, swipe left to add to menu, swipe right when made!
+            💡 <strong>Pro tip:</strong> Drag to scroll • Tap to flip cards • Swipe left to add to menu • Swipe right when made!
           </p>
         </div>
       </div>
