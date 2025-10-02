@@ -77,7 +77,7 @@ const Menu = () => {
   const consolidatedIngredients = getAllIngredients();
 
   return (
-    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pt-6 lg:pt-20 pb-24 lg:pb-8">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-8 animate-slide-up">
@@ -147,26 +147,26 @@ const Menu = () => {
               </Button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {menuItems.map((recipe, index) => (
                 <Card 
                   key={recipe.id} 
-                  className="p-4 animate-scale-in"
+                  className="p-3 animate-scale-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="flex items-start space-x-4">
+                  <div className="flex items-center space-x-3">
                     <img
                       src={recipe.image}
                       alt={recipe.name}
-                      className="w-16 h-16 rounded-lg object-cover"
+                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
                     />
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold text-foreground">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm text-foreground truncate">
                             {recipe.name}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {recipe.servings} servings • {recipe.cookTime}
                           </p>
                         </div>
@@ -174,31 +174,10 @@ const Menu = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeFromMenu(recipe.id)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0 flex-shrink-0"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </Button>
-                      </div>
-                      
-                      <div className="mt-3">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">
-                          INGREDIENTS ({recipe.ingredients.length})
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {recipe.ingredients.slice(0, 4).map((ingredient, idx) => (
-                            <span
-                              key={idx}
-                              className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground"
-                            >
-                              {ingredient.name}
-                            </span>
-                          ))}
-                          {recipe.ingredients.length > 4 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{recipe.ingredients.length - 4} more
-                            </span>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>
