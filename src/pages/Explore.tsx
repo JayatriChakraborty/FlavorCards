@@ -34,36 +34,54 @@ const Explore = () => {
   const displayRecipes = isSearching ? searchResults : popularRecipes;
 
   return (
-    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pt-6 lg:pt-20 pb-24 lg:pb-8">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
+        {/* Hero Header */}
         <div className="text-center mb-8 animate-slide-up">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-            Explore Recipes 🔍
+          <div className="inline-block p-3 bg-gradient-primary rounded-xl mb-4">
+            <Search className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">
+            Discover Your Next Favorite Recipe
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Discover amazing recipes from our community
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Browse thousands of recipes from around the world, find new flavors, and create culinary magic
           </p>
         </div>
 
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8 animate-scale-in">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-            <Input
-              type="text"
-              placeholder="Search recipes, ingredients, cuisines..."
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="pl-12 pr-12 py-4 text-lg bg-card border-border focus:border-primary shadow-card rounded-card"
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-            >
-              <Filter className="w-4 h-4" />
-            </Button>
+        {/* Enhanced Search Bar */}
+        <div className="max-w-3xl mx-auto mb-10 animate-scale-in">
+          <div className="relative bg-card rounded-2xl shadow-elegant p-2">
+            <div className="relative">
+              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Search for recipes, ingredients, or cuisines..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-14 pr-14 py-5 text-lg bg-transparent border-none focus:ring-0 focus-visible:ring-0"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-primary/10"
+              >
+                <Filter className="w-5 h-5 text-primary" />
+              </Button>
+            </div>
+          </div>
+          {/* Quick Filters */}
+          <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
+            <span className="text-sm text-muted-foreground">Quick filters:</span>
+            {["Vegetarian", "Under 30 min", "High Protein", "Low Carb"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => handleSearch(filter)}
+                className="text-sm px-3 py-1.5 rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition-all duration-200"
+              >
+                {filter}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -142,41 +160,46 @@ const Explore = () => {
           )}
         </div>
 
-        {/* Category Pills */}
+        {/* Enhanced Category Grid */}
         {!isSearching && (
-          <div className="animate-slide-up">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Browse by Category</h3>
-            <div className="flex flex-wrap gap-3">
+          <div className="animate-slide-up mb-12">
+            <h3 className="text-2xl font-bold text-foreground mb-6">Explore by Cuisine</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {[
-                { name: "🍝 Italian", color: "bg-secondary/10 text-secondary hover:bg-secondary/20" },
-                { name: "🌶️ Spicy", color: "bg-destructive/10 text-destructive hover:bg-destructive/20" },
-                { name: "🥗 Healthy", color: "bg-accent/10 text-accent hover:bg-accent/20" },
-                { name: "🍰 Desserts", color: "bg-warning/10 text-warning hover:bg-warning/20" },
-                { name: "⚡ Quick", color: "bg-primary/10 text-primary hover:bg-primary/20" },
-                { name: "🥘 Comfort Food", color: "bg-muted text-muted-foreground hover:bg-muted/80" }
+                { name: "Italian", emoji: "🍝", color: "from-red-500/20 to-green-500/20" },
+                { name: "Asian", emoji: "🍜", color: "from-orange-500/20 to-yellow-500/20" },
+                { name: "Mexican", emoji: "🌮", color: "from-green-500/20 to-red-500/20" },
+                { name: "Desserts", emoji: "🍰", color: "from-pink-500/20 to-purple-500/20" },
+                { name: "Healthy", emoji: "🥗", color: "from-green-500/20 to-emerald-500/20" },
+                { name: "Quick Meals", emoji: "⚡", color: "from-blue-500/20 to-cyan-500/20" }
               ].map((category, index) => (
                 <button
                   key={index}
-                  onClick={() => handleSearch(category.name.split(' ')[1])}
-                  className={`px-4 py-2 rounded-card font-medium transition-all duration-200 hover:scale-105 ${category.color}`}
+                  onClick={() => handleSearch(category.name)}
+                  className={`group relative overflow-hidden bg-gradient-to-br ${category.color} rounded-2xl p-6 hover:scale-105 transition-all duration-300 hover:shadow-lg`}
                 >
-                  {category.name}
+                  <div className="text-4xl mb-2">{category.emoji}</div>
+                  <div className="text-sm font-semibold text-foreground">{category.name}</div>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Trending Tip */}
-        <div className="mt-12 p-6 bg-gradient-primary rounded-card text-center">
-          <div className="text-4xl mb-3">✨</div>
-          <h3 className="text-xl font-bold text-primary-foreground mb-2">
-            Trending This Week
-          </h3>
-          <p className="text-primary-foreground/90">
-            Mediterranean bowls are getting lots of love! Try our quinoa bowl recipe.
-          </p>
-        </div>
+        {/* Trending Section */}
+        {!isSearching && (
+          <div className="mt-12 bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 rounded-2xl p-8 text-center border border-primary/20">
+            <div className="inline-block p-4 bg-gradient-primary rounded-2xl mb-4">
+              <TrendingUp className="w-8 h-8 text-primary-foreground" />
+            </div>
+            <h3 className="text-2xl font-bold text-foreground mb-3">
+              🔥 Trending This Week
+            </h3>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Mediterranean bowls, Air Fryer recipes, and One-Pot Wonders are getting lots of love from our community!
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
