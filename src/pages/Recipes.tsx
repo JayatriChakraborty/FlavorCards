@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { FolderPlus, Folder, Search, Grid, List } from "lucide-react";
+import { FolderPlus, Folder, Search, Grid, List, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import RecipeCard from "@/components/RecipeCard";
+import FolderSelectDialog from "@/components/FolderSelectDialog";
 import { mockRecipes, Recipe } from "@/data/mockRecipes";
+import { useToast } from "@/hooks/use-toast";
 
 interface RecipeFolder {
   id: string;
@@ -14,6 +22,7 @@ interface RecipeFolder {
 }
 
 const Recipes = () => {
+  const { toast } = useToast();
   const [folders, setFolders] = useState<RecipeFolder[]>([
     {
       id: "1",
@@ -40,19 +49,90 @@ const Recipes = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editFolderName, setEditFolderName] = useState("");
 
-  const createFolder = () => {
-    if (newFolderName.trim()) {
+  const createFolder = (name?: string) => {
+    const folderName = name || newFolderName;
+    if (folderName.trim()) {
       const newFolder: RecipeFolder = {
         id: Date.now().toString(),
-        name: newFolderName,
+        name: folderName,
         recipes: [],
         color: "bg-primary/10 border-primary/20"
       };
       setFolders(prev => [...prev, newFolder]);
       setNewFolderName("");
       setShowCreateFolder(false);
+      toast({
+        title: "Folder created",
+        description: `"${folderName}" has been created.`
+      });
+      return newFolder.id;
     }
+  };
+
+  const renameFolder = (folderId: string, newName: string) => {
+    if (newName.trim()) {
+      setFolders(prev => prev.map(f => 
+        f.id === folderId ? { ...f, name: newName } : f
+      ));
+      setEditingFolderId(null);
+      setEditFolderName("");
+      toast({
+        title: "Folder renamed",
+        description: `Folder renamed to "${newName}".`
+      });
+    }
+  };
+
+  const deleteFolder = (folderId: string) => {
+    const folder = folders.find(f => f.id === folderId);
+    setFolders(prev => prev.filter(f => f.id !== folderId));
+    if (selectedFolder?.id === folderId) {
+      setSelectedFolder(null);
+    }
+    toast({
+      title: "Folder deleted",
+      description: `"${folder?.name}" has been deleted.`
+    });
+  };
+
+  const handleLikeRecipe = (recipe: Recipe) => {
+    setSelectedRecipe(recipe);
+    setFolderDialogOpen(true);
+  };
+
+  const toggleRecipeInFolder = (folderId: string) => {
+    if (!selectedRecipe) return;
+
+    setFolders(prev => prev.map(folder => {
+      if (folder.id === folderId) {
+        const isInFolder = folder.recipes.some(r => r.id === selectedRecipe.id);
+        if (isInFolder) {
+          // Remove from folder
+          return {
+            ...folder,
+            recipes: folder.recipes.filter(r => r.id !== selectedRecipe.id)
+          };
+        } else {
+          // Add to folder
+          return {
+            ...folder,
+            recipes: [...folder.recipes, selectedRecipe]
+          };
+        }
+      }
+      return folder;
+    }));
+  };
+
+  const getRecipeFolderIds = (recipe: Recipe) => {
+    return folders
+      .filter(folder => folder.recipes.some(r => r.id === recipe.id))
+      .map(folder => folder.id);
   };
 
   const handleSwipeLeft = (recipe: Recipe) => {
@@ -118,7 +198,7 @@ const Recipes = () => {
                       className="flex-1"
                       onKeyPress={(e) => e.key === 'Enter' && createFolder()}
                     />
-                    <Button onClick={createFolder} disabled={!newFolderName.trim()}>
+                    <Button onClick={() => createFolder()} disabled={!newFolderName.trim()}>
                       Create
                     </Button>
                     <Button 
@@ -140,26 +220,77 @@ const Recipes = () => {
               {folders.map((folder, index) => (
                 <Card
                   key={folder.id}
-                  className={`p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${folder.color} animate-scale-in`}
+                  className={`p-6 transition-all duration-200 hover:scale-105 hover:shadow-lg ${folder.color} animate-scale-in`}
                   style={{ animationDelay: `${index * 0.1}s` }}
-                  onClick={() => setSelectedFolder(folder)}
                 >
                   <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-card rounded-lg shadow-sm">
-                      <Folder className="w-8 h-8 text-primary" />
+                    <div 
+                      className="flex items-center space-x-4 flex-1 cursor-pointer"
+                      onClick={() => setSelectedFolder(folder)}
+                    >
+                      <div className="p-3 bg-card rounded-lg shadow-sm">
+                        <Folder className="w-8 h-8 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        {editingFolderId === folder.id ? (
+                          <Input
+                            value={editFolderName}
+                            onChange={(e) => setEditFolderName(e.target.value)}
+                            onBlur={() => renameFolder(folder.id, editFolderName)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                renameFolder(folder.id, editFolderName);
+                              }
+                            }}
+                            className="h-8 font-semibold"
+                            autoFocus
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        ) : (
+                          <>
+                            <h3 className="font-semibold text-foreground text-lg">
+                              {folder.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {folder.recipes.length} recipe{folder.recipes.length !== 1 ? 's' : ''}
+                            </p>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground text-lg">
-                        {folder.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {folder.recipes.length} recipe{folder.recipes.length !== 1 ? 's' : ''}
-                      </p>
-                    </div>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setEditingFolderId(folder.id);
+                            setEditFolderName(folder.name);
+                          }}
+                        >
+                          <Edit2 className="mr-2 h-4 w-4" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => deleteFolder(folder.id)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   
                   {/* Preview Images */}
-                  <div className="mt-4 flex space-x-2">
+                  <div 
+                    className="mt-4 flex space-x-2 cursor-pointer"
+                    onClick={() => setSelectedFolder(folder)}
+                  >
                     {folder.recipes.slice(0, 3).map((recipe, idx) => (
                       <img
                         key={recipe.id}
@@ -273,6 +404,7 @@ const Recipes = () => {
                       recipe={recipe}
                       onSwipeLeft={handleSwipeLeft}
                       onSwipeRight={handleSwipeRight}
+                      onLike={handleLikeRecipe}
                     />
                   </div>
                 ))}
@@ -298,6 +430,21 @@ const Recipes = () => {
             )}
           </div>
         )}
+
+        {/* Folder Selection Dialog */}
+        <FolderSelectDialog
+          open={folderDialogOpen}
+          onOpenChange={setFolderDialogOpen}
+          folders={folders.map(f => ({ id: f.id, name: f.name, color: f.color }))}
+          selectedFolderIds={selectedRecipe ? getRecipeFolderIds(selectedRecipe) : []}
+          onSelectFolder={toggleRecipeInFolder}
+          onCreateFolder={(name) => {
+            const newId = createFolder(name);
+            if (newId) {
+              toggleRecipeInFolder(newId);
+            }
+          }}
+        />
       </div>
     </div>
   );

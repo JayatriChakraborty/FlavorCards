@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Heart, Clock, Users, RotateCcw, ChevronUp, ChevronDown } from "lucide-react";
+import { Heart, Clock, Users, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Ingredient {
@@ -85,7 +85,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
   return (
     <div 
       ref={cardRef}
-      className="relative w-full max-w-sm mx-auto h-96 perspective-1000"
+      className="relative w-full max-w-sm mx-auto h-[420px] perspective-1000"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -107,11 +107,11 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
             <img 
               src={recipe.image} 
               alt={recipe.name}
-              className="w-full h-64 object-cover"
+              className="w-full h-48 object-cover"
             />
-            <div className="p-4">
+            <div className="p-3">
               <div className="flex items-start justify-between mb-2">
-                <h3 className="text-lg font-semibold text-foreground leading-tight">
+                <h3 className="text-base font-semibold text-foreground leading-tight flex-1">
                   {recipe.name}
                 </h3>
                 <button
@@ -119,7 +119,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
                     e.stopPropagation();
                     onLike?.(recipe);
                   }}
-                  className="p-1 rounded-full hover:bg-hover transition-colors"
+                  className="p-1 rounded-full hover:bg-hover transition-colors flex-shrink-0 ml-2"
                 >
                   <Heart 
                     className={`w-5 h-5 transition-colors ${
@@ -130,16 +130,16 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
                   />
                 </button>
               </div>
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                 <div className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4" />
+                  <Clock className="w-3 h-3" />
                   <span>{recipe.cookTime}</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <Users className="w-4 h-4" />
-                  <span>{recipe.servings} servings</span>
+                  <Users className="w-3 h-3" />
+                  <span>{recipe.servings}</span>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                   recipe.difficulty === 'Easy' ? 'bg-success/10 text-success' :
                   recipe.difficulty === 'Medium' ? 'bg-warning/10 text-warning' :
                   'bg-destructive/10 text-destructive'
@@ -153,57 +153,60 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
 
         {/* Back of card */}
         <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
-          <div className="w-full h-full bg-card rounded-card shadow-card p-4 overflow-y-auto">
-            {/* Header with controls */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      adjustServings(-1);
-                    }}
-                    className="p-1 hover:bg-hover rounded-full"
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                  <span className="text-sm font-medium min-w-[2rem] text-center">
-                    {currentServings}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      adjustServings(1);
-                    }}
-                    className="p-1 hover:bg-hover rounded-full"
-                  >
-                    <ChevronUp className="w-4 h-4" />
-                  </button>
+          <div className="w-full h-full bg-card rounded-card shadow-card p-3 flex flex-col">
+            {/* Header with title and controls */}
+            <div className="mb-3">
+              <h3 className="text-base font-semibold text-foreground mb-2">{recipe.name}</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-3 h-3 text-muted-foreground" />
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        adjustServings(-1);
+                      }}
+                      className="p-1 hover:bg-hover rounded transition-colors"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="text-sm font-medium min-w-[1.5rem] text-center">
+                      {currentServings}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        adjustServings(1);
+                      }}
+                      className="p-1 hover:bg-hover rounded transition-colors"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMetric(!isMetric);
+                  }}
+                  className="text-xs h-7 px-2"
+                >
+                  {isMetric ? 'Metric' : 'Imperial'}
+                </Button>
               </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMetric(!isMetric);
-                }}
-                className="text-xs"
-              >
-                {isMetric ? 'Metric' : 'Imperial'}
-              </Button>
             </div>
 
-            {/* Ingredients list */}
-            <div>
-              <h4 className="font-semibold text-foreground mb-3">Ingredients</h4>
-              <div className="space-y-2">
+            {/* Ingredients list - scrollable if needed */}
+            <div className="flex-1 min-h-0">
+              <h4 className="font-semibold text-sm text-foreground mb-2">Ingredients</h4>
+              <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-2">
                 {recipe.ingredients.map((ingredient, index) => (
-                  <div key={index} className="flex justify-between items-center text-sm">
+                  <div key={index} className="flex justify-between items-center text-xs">
                     <span className="text-foreground">{ingredient.name}</span>
-                    <span className="text-muted-foreground font-medium">
+                    <span className="text-muted-foreground font-medium whitespace-nowrap ml-2">
                       {getAdjustedAmount(ingredient)} {getUnit(ingredient)}
                     </span>
                   </div>
@@ -212,11 +215,11 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
             </div>
 
             {/* Action buttons */}
-            <div className="flex space-x-2 mt-6">
+            <div className="flex space-x-2 mt-3 pt-3 border-t border-border">
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1"
+                className="flex-1 h-8 text-xs"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSwipeLeft?.(recipe);
@@ -226,7 +229,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
               </Button>
               <Button
                 size="sm"
-                className="flex-1 bg-accent hover:bg-accent-light"
+                className="flex-1 h-8 text-xs bg-accent hover:bg-accent-light"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSwipeRight?.(recipe);
