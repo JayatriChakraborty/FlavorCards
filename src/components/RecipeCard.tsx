@@ -85,7 +85,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
   return (
     <div 
       ref={cardRef}
-      className="relative w-full max-w-sm mx-auto h-[420px] perspective-1000"
+      className="relative w-full max-w-sm mx-auto h-[400px] lg:h-[420px] perspective-1000 touch-manipulation"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -119,7 +119,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
                     e.stopPropagation();
                     onLike?.(recipe);
                   }}
-                  className="p-1 rounded-full hover:bg-hover transition-colors flex-shrink-0 ml-2"
+                  className="p-1.5 lg:p-1 rounded-full hover:bg-hover active:scale-95 transition-all flex-shrink-0 ml-2 touch-manipulation"
                 >
                   <Heart 
                     className={`w-5 h-5 transition-colors ${
@@ -166,9 +166,9 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
                         e.stopPropagation();
                         adjustServings(-1);
                       }}
-                      className="p-1 hover:bg-hover rounded transition-colors"
+                      className="p-1.5 lg:p-1 hover:bg-hover active:bg-muted rounded transition-all touch-manipulation"
                     >
-                      <Minus className="w-3 h-3" />
+                      <Minus className="w-3.5 h-3.5 lg:w-3 lg:h-3" />
                     </button>
                     <span className="text-sm font-medium min-w-[1.5rem] text-center">
                       {currentServings}
@@ -178,9 +178,9 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
                         e.stopPropagation();
                         adjustServings(1);
                       }}
-                      className="p-1 hover:bg-hover rounded transition-colors"
+                      className="p-1.5 lg:p-1 hover:bg-hover active:bg-muted rounded transition-all touch-manipulation"
                     >
-                      <Plus className="w-3 h-3" />
+                      <Plus className="w-3.5 h-3.5 lg:w-3 lg:h-3" />
                     </button>
                   </div>
                 </div>
@@ -192,7 +192,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
                     e.stopPropagation();
                     setIsMetric(!isMetric);
                   }}
-                  className="text-xs h-7 px-2"
+                  className="text-xs h-8 lg:h-7 px-3 lg:px-2 touch-manipulation"
                 >
                   {isMetric ? 'Metric' : 'Imperial'}
                 </Button>
@@ -219,7 +219,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-1 h-8 text-xs"
+                className="flex-1 h-10 lg:h-8 text-xs touch-manipulation active:scale-95"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSwipeLeft?.(recipe);
@@ -229,7 +229,7 @@ const RecipeCard = ({ recipe, onSwipeLeft, onSwipeRight, onLike }: RecipeCardPro
               </Button>
               <Button
                 size="sm"
-                className="flex-1 h-8 text-xs bg-accent hover:bg-accent-light"
+                className="flex-1 h-10 lg:h-8 text-xs bg-accent hover:bg-accent-light touch-manipulation active:scale-95"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSwipeRight?.(recipe);

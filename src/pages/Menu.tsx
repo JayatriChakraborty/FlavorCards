@@ -77,45 +77,45 @@ const Menu = () => {
   const consolidatedIngredients = getAllIngredients();
 
   return (
-    <div className="min-h-screen bg-background pt-6 lg:pt-20 pb-24 lg:pb-8">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-background pt-4 pb-20 lg:pt-20 lg:pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="text-center mb-8 animate-slide-up">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+        <div className="text-center mb-6 lg:mb-8 animate-slide-up">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">
             Your Menu 📋
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-sm lg:text-lg">
             Plan your meals and generate shopping lists
           </p>
         </div>
 
         {/* Link Input Section */}
-        <Card className="p-6 mb-8 animate-scale-in">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-gradient-primary rounded-lg">
-              <Link2 className="w-5 h-5 text-primary-foreground" />
+        <Card className="p-4 lg:p-6 mb-6 lg:mb-8 animate-scale-in">
+          <div className="flex items-center space-x-3 mb-3 lg:mb-4">
+            <div className="p-2 bg-gradient-primary rounded-lg flex-shrink-0">
+              <Link2 className="w-4 h-4 lg:w-5 lg:h-5 text-primary-foreground" />
             </div>
-            <div>
-              <h3 className="font-semibold text-foreground">Add Recipe from Link</h3>
-              <p className="text-sm text-muted-foreground">
-                Paste a YouTube, Instagram, or recipe website link
+            <div className="min-w-0">
+              <h3 className="font-semibold text-sm lg:text-base text-foreground">Add Recipe from Link</h3>
+              <p className="text-xs lg:text-sm text-muted-foreground">
+                Paste a YouTube, Instagram, or recipe link
               </p>
             </div>
           </div>
           
-          <div className="flex space-x-3">
+          <div className="flex space-x-2 lg:space-x-3">
             <Input
               type="url"
-              placeholder="https://youtube.com/watch?v=... or recipe URL"
+              placeholder="Paste recipe URL..."
               value={linkInput}
               onChange={(e) => setLinkInput(e.target.value)}
-              className="flex-1"
+              className="flex-1 text-sm lg:text-base"
               disabled={isProcessingLink}
             />
             <Button
               onClick={handleAddLink}
               disabled={!linkInput.trim() || isProcessingLink}
-              className="bg-accent hover:bg-accent-light"
+              className="bg-accent hover:bg-accent-light h-9 lg:h-10 w-9 lg:w-auto px-2 lg:px-4 flex-shrink-0"
             >
               {isProcessingLink ? (
                 <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin" />
@@ -134,7 +134,7 @@ const Menu = () => {
           )}
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Menu Items */}
           <div>
             <div className="flex items-center justify-between mb-6">
