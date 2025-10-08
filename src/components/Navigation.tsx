@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { Home, Search, ChefHat, BookOpen, User } from "lucide-react";
+import { Home, Search, ChefHat, BookOpen } from "lucide-react";
+import HamburgerMenu from "./HamburgerMenu";
 
 const Navigation = () => {
   const navItems = [
@@ -47,35 +48,40 @@ const Navigation = () => {
             })}
           </nav>
 
-          {/* Profile */}
-          <button className="flex items-center justify-center w-10 h-10 bg-gradient-secondary rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105">
-            <User className="w-5 h-5 text-secondary-foreground" />
-          </button>
+          {/* Hamburger Menu */}
+          <HamburgerMenu />
         </div>
       </div>
 
       {/* Mobile & Tablet Navigation - Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-card/95 backdrop-blur-md border-t border-border px-6 py-3 z-50">
-        <div className="flex items-center justify-around">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex flex-col items-center space-y-1 px-3 py-2 rounded-button transition-all duration-200 ${
-                    isActive
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                  }`
-                }
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs font-medium">{item.label}</span>
-              </NavLink>
-            );
-          })}
+      <div className="fixed bottom-0 left-0 right-0 lg:hidden bg-card/95 backdrop-blur-md border-t border-border z-50">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-around flex-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `flex flex-col items-center space-y-1 px-2 py-2 rounded-button transition-all duration-200 ${
+                      isActive
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`
+                  }
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="text-xs font-medium">{item.label}</span>
+                </NavLink>
+              );
+            })}
+          </div>
+          
+          {/* Mobile Hamburger Menu */}
+          <div className="flex-shrink-0">
+            <HamburgerMenu />
+          </div>
         </div>
       </div>
     </>
